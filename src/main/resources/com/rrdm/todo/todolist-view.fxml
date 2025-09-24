@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.rrdm.todo.TodoListController">
+   <children>
+      <Button fx:id="addButton" layoutX="717.0" layoutY="14.0" mnemonicParsing="false" onAction="#onAddButtonClick" prefHeight="35.0" prefWidth="58.0" text="Add" />
+      <VBox layoutX="14.0" layoutY="85.0" prefHeight="501.0" prefWidth="244.0">
+         <children>
+            <ListView fx:id="tasksListView" prefHeight="536.0" prefWidth="244.0" />
+         </children></VBox>
+      <VBox layoutX="278.0" layoutY="85.0" prefHeight="501.0" prefWidth="244.0">
+         <children>
+            <ListView fx:id="inProgressListView" prefHeight="536.0" prefWidth="244.0" />
+         </children></VBox>
+      <VBox layoutX="542.0" layoutY="85.0" prefHeight="501.0" prefWidth="244.0">
+         <children>
+            <ListView fx:id="completedListView" prefHeight="536.0" prefWidth="244.0" />
+         </children></VBox>
+      <Label layoutX="105.0" layoutY="53.0" text="Tasks">
+         <font>
+            <Font name="Verdana" size="22.0" />
+         </font>
+      </Label>
+      <Label layoutX="337.0" layoutY="53.0" text="In Progress">
+         <font>
+            <Font name="Verdana" size="22.0" />
+         </font>
+      </Label>
+      <Label layoutX="605.0" layoutY="53.0" text="Completed">
+         <font>
+            <Font name="Verdana" size="22.0" />
+         </font>
+      </Label>
+   </children>
+</AnchorPane>
