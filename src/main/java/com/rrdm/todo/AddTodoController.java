@@ -12,13 +12,12 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import java.awt.*;
-import java.util.List;
+import java.io.IOException;
 
 public class AddTodoController {
     final ObservableList<String> choices = FXCollections.observableArrayList(
-    "Low","Med","High"
+            "Low", "Med", "High"
     );
-    TodoListController todoListController;
 
     TodoDAO todoDAO;
 
@@ -29,7 +28,7 @@ public class AddTodoController {
     TextArea descField;
 
     @FXML
-    ComboBox<String> priorityComboBox ;
+    ComboBox<String> priorityComboBox;
 
     @FXML
     Button addTodoButton;
@@ -37,33 +36,30 @@ public class AddTodoController {
     @FXML
     Button cancelButton;
 
+    ObservableList<Todo> tasksList;
+    ObservableList<Todo> inProgressList;
+    ObservableList<Todo> completedList;
+
     @FXML
-    protected void onAddTodoButtonClick() {
+    protected void onAddTodoButtonClick() throws IOException {
         String title = titleField.getText();
         String desc = descField.getText();
         PRIORITY priority = PRIORITY.valueOf(priorityComboBox.getValue().toUpperCase());
 
-        if(validateData(title,desc)){
-            Todo todo = new Todo(title,desc,priority);
-            if(todoDAO != null){
-                todoDAO.addTodo(todo);
-            }else{
-                todoDAO = new TodoDAO();
-                todoDAO.addTodo(todo);
-            }
+        if (validateData(title, desc)) {
+            Todo todo = new Todo(title, desc, priority);
+            todoDAO.addTodo(todo);
+            tasksList.add(todo);
             ((Stage) titleField.getScene().getWindow()).close();
-            todoListController.updateList();
         }
     }
 
-    public void initialize(){
-        todoListController = new TodoListController();
+    public void initialize() {
         priorityComboBox.setItems(choices);
         priorityComboBox.setValue("Low");
     }
 
     private boolean validateData(String title, String desc) {
-
 
         if (title.isEmpty()) {
             titleField.setBorder(new Border(new BorderStroke(
@@ -73,7 +69,7 @@ public class AddTodoController {
                     BorderWidths.DEFAULT // Border width
             )));
         }
-        if(desc.isEmpty()){
+        if (desc.isEmpty()) {
             descField.setBorder(new Border(new BorderStroke(
                     Color.RED, // Border color
                     BorderStrokeStyle.SOLID, // Border style
@@ -88,5 +84,15 @@ public class AddTodoController {
     @FXML
     protected void onCancelButtonClick() {
 
+    }
+
+    public void setLists(ObservableList<Todo> tasksList, ObservableList<Todo> inProgressList, ObservableList<Todo> completedList) {
+        this.tasksList = tasksList;
+        this.inProgressList = inProgressList;
+        this.completedList = completedList;
+    }
+
+    public void setTodoDAO(TodoDAO todoDAO) {
+        this.todoDAO = todoDAO;
     }
 }

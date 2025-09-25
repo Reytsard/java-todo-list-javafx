@@ -2,6 +2,7 @@ module com.rrdm.todo {
     requires javafx.controls;
     requires javafx.fxml;
     requires java.desktop;
+    requires javafx.graphics;
 
 
     opens com.rrdm.todo to javafx.fxml;

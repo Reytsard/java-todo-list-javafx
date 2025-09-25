@@ -7,8 +7,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -17,59 +16,82 @@ import java.util.ArrayList;
 public class TodoListController {
 
     TodoDAO todoDAO = new TodoDAO();
-    ArrayList<Todo> tasks = new ArrayList<>(2);
-    ArrayList<Todo> inProgress = new ArrayList<>(2);
-    ArrayList<Todo> completed = new ArrayList<>(2);
+    CardListCell cardListCell;
 
-    @FXML
-    Button addButton;
-
-    @FXML
-    VBox todo;
-
-    @FXML
-    VBox doing;
-
-    @FXML
-    VBox finished;
+    // Make ObservableLists the main data store:
+    private ObservableList<Todo> tasksList;
+    private ObservableList<Todo> inProgressList;
+    private ObservableList<Todo> completedList;
 
     @FXML
     ListView<Todo> tasksListView;
-
     @FXML
     ListView<Todo> inProgressListView;
-
     @FXML
     ListView<Todo> completedListView;
 
+    @FXML
+    Button addButton;
+    @FXML
+    VBox todo;
+    @FXML
+    VBox doing;
+    @FXML
+    VBox finished;
+
     public void initialize() {
 
+        tasksList = FXCollections.observableArrayList();
+        inProgressList = FXCollections.observableArrayList();
+        completedList = FXCollections.observableArrayList();
         System.out.println("initializing todolist");
+
+        try{
+            CardController.tasksList = tasksList;
+            CardController.inProgressList = inProgressList;
+            CardController.completedList = completedList;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        tasksListView.setCellFactory(lv -> new CardListCell());
+
+        inProgressListView.setCellFactory(lv -> new CardListCell());
+
+        completedListView.setCellFactory(lv -> new CardListCell());
+
+        // bind the ListViews once
+        tasksListView.setItems(tasksList);
+        inProgressListView.setItems(inProgressList);
+        completedListView.setItems(completedList);
+
+        loadTodos();
+    }
+
+    public void addToTasks(Todo todo) {
+        tasksList.add(todo);
+        tasksListView.setItems(tasksList);
+    }
+
+    private void loadTodos() {
+        // clear before reloading
+        tasksList.clear();
+        inProgressList.clear();
+        completedList.clear();
 
         ArrayList<Todo> todos = todoDAO.getTodos();
 
-        for (int i = 0; i < todos.size() - 1; i++) {
-            Todo currentTodo = todos.get(i);
+        for (Todo currentTodo : todos) {
             switch (currentTodo.getStatus()) {
-                case "todo" -> tasks.add(currentTodo);
-                case "inProgress" -> inProgress.add(currentTodo);
-                case "completed" -> completed.add(currentTodo);
+                case "todo" -> tasksList.add(currentTodo);
+                case "inProgress" -> inProgressList.add(currentTodo);
+                case "completed" -> completedList.add(currentTodo);
             }
         }
 
-        ObservableList<Todo> tasksList = FXCollections.observableArrayList(tasks);
-        ObservableList<Todo> inProgressList = FXCollections.observableArrayList(inProgress);
-        ObservableList<Todo> completedList = FXCollections.observableArrayList(completed);
 
-        updateListViews(tasksList, inProgressList, completedList);
 
-        System.out.println("taskslists: " + tasksList.size());
-    }
-
-    private void updateListViews(ObservableList<Todo> tasksList, ObservableList<Todo> inProgressList, ObservableList<Todo> completedList) {
-        tasksListView = new ListView<>(tasksList);
-        inProgressListView = new ListView<>(inProgressList);
-        completedListView = new ListView<>(completedList);
+        System.out.println("tasks lists: " + tasksList.size());
     }
 
     @FXML
@@ -80,30 +102,18 @@ public class TodoListController {
         Scene scene = new Scene(loader.load(), 400, 400);
         addTodoListStage.setScene(scene);
         addTodoListStage.show();
+
+        AddTodoController controller = loader.getController();
+        controller.setLists(tasksList, inProgressList, completedList);
+        controller.setTodoDAO(todoDAO);
     }
 
     public void updateList() {
         System.out.println("updating todolist");
+        loadTodos(); // just reload
 
-        ArrayList<Todo> todos = todoDAO.getTodos();
-
-        for (int i = 0; i < todos.size() - 1; i++) {
-            Todo currentTodo = todos.get(i);
-            switch (currentTodo.getStatus()) {
-                case "todo" -> tasks.add(currentTodo);
-                case "inProgress" -> inProgress.add(currentTodo);
-                case "completed" -> completed.add(currentTodo);
-            }
-        }
-
-        ObservableList<Todo> tasksList = FXCollections.observableArrayList(tasks);
-        ObservableList<Todo> inProgressList = FXCollections.observableArrayList(inProgress);
-        ObservableList<Todo> completedList = FXCollections.observableArrayList(completed);
-
-        updateListViews(tasksList, inProgressList, completedList);
-
-        System.out.println("taskslists: " + tasksList.size());
+        tasksListView.refresh();
+        inProgressListView.refresh();
+        completedListView.refresh();
     }
-
-
 }
