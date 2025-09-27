@@ -2,10 +2,15 @@ package com.rrdm.todo;
 
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.Stage;
+
+import java.io.IOException;
 
 public class CardController {
 
@@ -33,7 +38,25 @@ public class CardController {
     Button editButton;
 
     @FXML
-    protected void onEditButtonClick() {
+    protected void onEditButtonClick() throws IOException {
+
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("editcard-view.fxml"));
+
+        Stage newStage = new Stage();
+        Scene newScene = new Scene(loader.load(), 400, 400);
+        newStage.setScene(newScene);
+        newStage.show();
+
+        EditCardController controller = loader.getController();
+        switch (todo.getStatus()){
+            case "todo" -> controller.setObservableList(tasksList);
+            case "inProgress" -> controller.setObservableList(inProgressList);
+            case "completed" -> controller.setObservableList(completedList);
+        }
+        controller.setOldTodo(todo);
+        controller.setDescriptionField(todo.getDesc());
+        controller.setTitleField(todo.getTitle());
+        controller.setPrioComboBox(todo.getPriority());
 
     }
 
@@ -54,6 +77,7 @@ public class CardController {
 
             default:
         }
+        TodoDAO.updateTodo(todo);
     }
 
     @FXML
@@ -73,6 +97,7 @@ public class CardController {
 
             default:
         }
+        TodoDAO.updateTodo(todo);
     }
 
     public void setText(Todo todo) {

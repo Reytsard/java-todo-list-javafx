@@ -11,11 +11,13 @@ import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class TodoListController {
 
-    TodoDAO todoDAO = new TodoDAO();
+    ArrayList<Todo> todos = new ArrayList<>();
+
     CardListCell cardListCell;
 
     // Make ObservableLists the main data store:
@@ -39,7 +41,7 @@ public class TodoListController {
     @FXML
     VBox finished;
 
-    public void initialize() {
+    public void initialize() throws SQLException {
 
         tasksList = FXCollections.observableArrayList();
         inProgressList = FXCollections.observableArrayList();
@@ -73,13 +75,13 @@ public class TodoListController {
         tasksListView.setItems(tasksList);
     }
 
-    private void loadTodos() {
+    private void loadTodos() throws SQLException {
         // clear before reloading
         tasksList.clear();
         inProgressList.clear();
         completedList.clear();
 
-        ArrayList<Todo> todos = todoDAO.getTodos();
+        todos = TodoDAO.getTodos();
 
         for (Todo currentTodo : todos) {
             switch (currentTodo.getStatus()) {
@@ -105,15 +107,18 @@ public class TodoListController {
 
         AddTodoController controller = loader.getController();
         controller.setLists(tasksList, inProgressList, completedList);
-        controller.setTodoDAO(todoDAO);
     }
 
-    public void updateList() {
+    public void updateList() throws SQLException {
         System.out.println("updating todolist");
         loadTodos(); // just reload
 
         tasksListView.refresh();
         inProgressListView.refresh();
         completedListView.refresh();
+    }
+
+    public void setTodos(ArrayList<Todo> todos) {
+        this.todos = todos;
     }
 }

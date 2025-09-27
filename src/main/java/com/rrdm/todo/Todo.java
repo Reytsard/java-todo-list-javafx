@@ -1,16 +1,19 @@
 package com.rrdm.todo;
 
 public class Todo {
+    private int id;
     private String title;
     private String desc;
     private PRIORITY priority;
     private String status;
+    private static int idCount = 1;
 
-    public Todo(){
+    public Todo() {
         title = "";
         desc = "";
         priority = PRIORITY.LOW;
         status = "todo";
+        id = idCount++;
     }
 
     public Todo(String title, String desc, PRIORITY priority) {
@@ -18,6 +21,19 @@ public class Todo {
         this.desc = desc;
         this.priority = priority;
         status = "todo";
+        id = idCount++;
+    }
+
+    public Todo(int id, String title, String desc, String priority, String status) {
+        this.id = id;
+        this.title = title;
+        this.desc = desc;
+        this.priority = PRIORITY.valueOf(priority);
+        this.status = status;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public String getTitle() {

@@ -1,39 +1,35 @@
 package com.rrdm.todo;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class TodoDAO {
-    private static ArrayList<Todo> todos;
+    private static TodoDatabase todoDatabase;
 
-    public TodoDAO() {
-        todos = new ArrayList<>(3);
+
+    public static ArrayList<Todo> getTodos() throws SQLException {
+        return todoDatabase.getTodos();
     }
 
-    public ArrayList<Todo> getTodos() {
-        return todos;
+    public static synchronized void addTodo(Todo todo) throws SQLException {
+        todoDatabase.addTodo(todo);
     }
 
-    public synchronized void addTodo(Todo todo) {
-        todos.add(todo);
-    }
-
-    public synchronized void updateTodo(Todo todo) {
-
-    }
-
-    public synchronized void updateTodo(int index, Todo todo) {
-        todos.set(index, todo);
-    }
-
-    public synchronized Todo deleteTodo(Todo todo) {
-        for (int i = 0; i < todos.size() - 1; i++) {
-            Todo currentTodo = todos.get(i);
-            if (todo.getTitle().compareTo(currentTodo.getTitle()) == 0 &&
-                    todo.getDesc().compareToIgnoreCase(currentTodo.getDesc()) == 0) {
-                todos.remove(currentTodo);
-                return currentTodo;
-            }
+    public static synchronized void updateTodo(Todo todo) {
+        try {
+            todoDatabase.updateTodo(todo);
+        } catch (SQLException e) {
+            System.out.println("failed to update todo");
         }
-        return null;
+    }
+
+    public static synchronized void deleteTodo(Todo todo) throws SQLException {
+        todoDatabase.deleteTodo(todo);
+    }
+
+    public static void startConnection() throws SQLException {
+        todoDatabase = new TodoDatabase();
     }
 }

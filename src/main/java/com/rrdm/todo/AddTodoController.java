@@ -13,13 +13,13 @@ import javafx.stage.Stage;
 
 import java.awt.*;
 import java.io.IOException;
+import java.sql.SQLException;
 
 public class AddTodoController {
     final ObservableList<String> choices = FXCollections.observableArrayList(
-            "Low", "Med", "High"
+            "LOW", "MED", "HIGH"
     );
 
-    TodoDAO todoDAO;
 
     @FXML
     TextField titleField;
@@ -41,14 +41,14 @@ public class AddTodoController {
     ObservableList<Todo> completedList;
 
     @FXML
-    protected void onAddTodoButtonClick() throws IOException {
+    protected void onAddTodoButtonClick() throws IOException, SQLException {
         String title = titleField.getText();
         String desc = descField.getText();
         PRIORITY priority = PRIORITY.valueOf(priorityComboBox.getValue().toUpperCase());
 
-        if (validateData(title, desc)) {
+        if (validateData(title)) {
             Todo todo = new Todo(title, desc, priority);
-            todoDAO.addTodo(todo);
+            TodoDAO.addTodo(todo);
             tasksList.add(todo);
             ((Stage) titleField.getScene().getWindow()).close();
         }
@@ -59,7 +59,7 @@ public class AddTodoController {
         priorityComboBox.setValue("Low");
     }
 
-    private boolean validateData(String title, String desc) {
+    private boolean validateData(String title) {
 
         if (title.isEmpty()) {
             titleField.setBorder(new Border(new BorderStroke(
@@ -69,15 +69,7 @@ public class AddTodoController {
                     BorderWidths.DEFAULT // Border width
             )));
         }
-        if (desc.isEmpty()) {
-            descField.setBorder(new Border(new BorderStroke(
-                    Color.RED, // Border color
-                    BorderStrokeStyle.SOLID, // Border style
-                    CornerRadii.EMPTY, // Corner radius
-                    BorderWidths.DEFAULT // Border width
-            )));
-        }
-        return !title.isEmpty() && !desc.isEmpty();
+        return !title.isEmpty();
 
     }
 
@@ -92,7 +84,4 @@ public class AddTodoController {
         this.completedList = completedList;
     }
 
-    public void setTodoDAO(TodoDAO todoDAO) {
-        this.todoDAO = todoDAO;
-    }
 }
